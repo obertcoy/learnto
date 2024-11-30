@@ -1,0 +1,50 @@
+User
+- UserId
+- Name
+- Email
+- Profile Picture
+- isInstructor
+- Biography (if isInstructor)
+
+Workshop_users
+- UserId
+- WorkshopId
+
+Workshop
+- Name
+- Topics
+- Description
+- Duration
+- Price
+- Date
+- Instructor -> User
+- Status ENUM('Upcoming', 'Completed') DEFAULT 'Upcoming'
+- VC Link
+- Materials
+- Ratings [After]
+- Reviews [After]
+
+Topic
+- TopicId
+- Topic
+
+Workshop_Topics
+- WorkshopId
+- TopicId
+
+Rating
+- RatingId
+- UserId
+- WorkshopId
+- Rate
+
+Review
+- ReviewId
+- UserId
+- WorkshopId
+- Content
+
+Materials
+- MaterialId
+- WorkshopId
+- Blob

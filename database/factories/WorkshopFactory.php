@@ -1,0 +1,24 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Workshop;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class WorkshopFactory extends Factory
+{
+    protected $model = Workshop::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->sentence(3),
+            'duration' => $this->faker->numberBetween(60, 180), // Minutes
+            'price' => $this->faker->numberBetween(10000, 50000), // Price in cents
+            'date' => $this->faker->dateTimeBetween('+1 week', '+6 months'),
+            'status' => $this->faker->randomElement(['Upcoming', 'Completed']),
+            'vc_link' => $this->faker->url,
+            'instructor_id' => 1,
+        ];
+    }
+}
