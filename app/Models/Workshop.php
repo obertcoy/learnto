@@ -12,12 +12,13 @@ class Workshop extends Model
 
     protected $casts = [
         'date' => 'datetime',
+        'objectives' => 'array'
     ];
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_workshops', 'workshop_id', 'user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function topics()

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->dateTime('date');
             $table->enum('status', ['Upcoming', 'Completed'])->default('Upcoming');
             $table->string('vc_link');
-            $table->foreignId('instructor_id') 
+            $table->json('objectives');
+            $table->foreignId('instructor_id')
             ->constrained('users')
             ->onDelete('cascade');
             $table->timestamps();

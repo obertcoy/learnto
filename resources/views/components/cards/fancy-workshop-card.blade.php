@@ -5,7 +5,7 @@
             <div>
                 <x-card-title class="text-xl font-bold">{{ $workshop->name }}</x-card-title>
                 <x-card-description class="mt-1 flex items-center gap-1">
-                    <x-bi-tag class="h-4 w-4" />
+                    {{-- <x-bi-tag class="h-4 w-4" /> --}}
                     <span>
                         {{ $workshop->topics->pluck('topic')->implode(', ') }}
                     </span>
@@ -41,17 +41,17 @@
             </div>
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
-                    <x-bi-calendar class="h-4 w-4" />
+                    {{-- <x-bi-calendar class="h-4 w-4" /> --}}
                     <span class="text-sm">
                         {{ $workshop->date->format('M d, Y') }} at {{ $workshop->date->format('h:i A') }}
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <x-bi-clock class="h-4 w-4"  />
+                    {{-- <x-bi-clock class="h-4 w-4"  /> --}}
                     <span class="text-sm">{{ $workshop->duration }} minutes</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <x-gmdi-attach-money-o class="h-4 w-4" />
+                    {{-- <x-gmdi-attach-money-o class="h-4 w-4" /> --}}
                     <span class="text-sm">${{ number_format($workshop->price / 100, 2) }}</span>
                 </div>
             </div>
@@ -60,7 +60,7 @@
 
     <div
         class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/0 flex items-end justify-center translate-y-full opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-        <a href="/workshops/{{ $workshop->id }}" class="text-white text-xl font-bold drop-shadow-xl mx-auto mb-16">
+        <a href="{{ route('workshops.show', $workshop) }}" class="text-white text-xl font-bold drop-shadow-xl mx-auto mb-16">
             Learn More
         </a>
     </div>

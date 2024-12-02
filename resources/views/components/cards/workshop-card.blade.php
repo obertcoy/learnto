@@ -6,7 +6,7 @@
             <div>
                 <x-card-title class="text-xl font-bold">{{ $workshop->name }}</x-card-title>
                 <x-card-description class="mt-1 flex items-center gap-1">
-                    <x-bi-tag class="h-4 w-4" />
+                    {{-- <x-bi-tag class="h-4 w-4" /> --}}
                     <span>
                         {{ $workshop->topics->pluck('topic')->implode(', ') }}
                     </span>
@@ -42,17 +42,17 @@
             </div>
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
-                    <x-bi-calendar class="h-4 w-4" />
+                    {{-- <x-bi-calendar class="h-4 w-4" /> --}}
                     <span class="text-sm">
                         {{ $workshop->date->format('M d, Y') }} at {{ $workshop->date->format('h:i A') }}
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <x-bi-clock class="h-4 w-4" />
+                    {{-- <x-bi-clock class="h-4 w-4" /> --}}
                     <span class="text-sm">{{ $workshop->duration }} minutes</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <x-gmdi-attach-money-o class="h-4 w-4" />
+                    {{-- <x-gmdi-attach-money-o class="h-4 w-4" /> --}}
                     <span class="text-sm">${{ number_format($workshop->price / 100, 2) }}</span>
                 </div>
                 @if ($workshop->status === 'Upcoming')
@@ -68,7 +68,7 @@
         </div>
     </x-card-content>
     <x-card-footer class="flex justify-between">
-        <a href="/workshops/{{ $workshop->id }}">
+        <a href="{{ route('workshops.show', $workshop) }}">
             <x-button variant="outline">
                 View Details
             </x-button>

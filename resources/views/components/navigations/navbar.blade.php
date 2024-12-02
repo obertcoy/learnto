@@ -1,5 +1,5 @@
 <header className="bg-white shadow-sm">
-    <nav class="max-w-7xl mx-auto flex w-full px-4 sm:px-6 lg:px-8 h-16 items-center justify-between">
+    <nav class="max-w-7xl mx-auto flex w-full px-4 sm:px-6 lg:px-8 h-18 items-center justify-between">
 
         <a href="/" class="text-2xl font-medium text-foreground">
             LearnTo

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 Route::controller(WorkshopController::class)->group(function () {
     Route::get('/', 'featured')->name('workshops.welcome');
     Route::get('/explore', 'index')->name('workshops.explore');
+    Route::get('/workshops/{workshop}', 'show')->name('workshops.show');
+
 });
 
 

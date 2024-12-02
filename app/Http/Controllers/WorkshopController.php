@@ -18,7 +18,7 @@ class WorkshopController extends Controller
 
         $workshops = Workshop::with([
             'instructor' => function ($query) {
-                $query->select('id', 'name', 'profile_picture_url') 
+                $query->select('id', 'name', 'profile_picture_url')
                     ->withCount('ratings')
                     ->withAvg('ratings as average_rating', 'rate');
             },
@@ -42,7 +42,7 @@ class WorkshopController extends Controller
 
         $featureds = Workshop::with([
             'instructor' => function ($query) {
-                $query->select('id', 'name', 'profile_picture_url') 
+                $query->select('id', 'name', 'profile_picture_url')
                     ->withCount('ratings')
                     ->withAvg('ratings as average_rating', 'rate');
             },
@@ -73,7 +73,7 @@ class WorkshopController extends Controller
      */
     public function show(Workshop $workshop)
     {
-        //
+        return view('pages.workshop-show', compact('workshop'));
     }
 
     /**
