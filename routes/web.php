@@ -5,7 +5,8 @@ use App\Http\Controllers\WorkshopController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(WorkshopController::class)->group(function () {
-    Route::get('/', 'index');
+    Route::get('/', 'featured')->name('workshops.welcome');
+    Route::get('/explore', 'index')->name('workshops.explore');
 });
 
 
@@ -17,6 +18,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::get("ping" , function() {
+    return 'pong';
 });
 
 require __DIR__.'/auth.php';

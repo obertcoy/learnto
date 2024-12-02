@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('duration');
+            $table->text('description');
             $table->unsignedBigInteger('price');
             $table->dateTime('date');
             $table->enum('status', ['Upcoming', 'Completed'])->default('Upcoming');

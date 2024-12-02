@@ -13,8 +13,9 @@ class WorkshopFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(3),
-            'duration' => $this->faker->numberBetween(60, 180), // Minutes
-            'price' => $this->faker->numberBetween(10000, 50000), // Price in cents
+            'duration' => $this->faker->numberBetween(60, 180),
+            'price' => $this->faker->numberBetween(10000, 50000), 
+            'description' => $this->faker->paragraph(),
             'date' => $this->faker->dateTimeBetween('+1 week', '+6 months'),
             'status' => $this->faker->randomElement(['Upcoming', 'Completed']),
             'vc_link' => $this->faker->url,

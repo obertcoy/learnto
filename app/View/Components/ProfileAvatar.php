@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Avatar extends Component
+class ProfileAvatar extends Component
 {
     /**
      * Create a new component instance.
@@ -26,6 +26,6 @@ class Avatar extends Component
 
     public function render()
     {
-        return view('components.avatar');
+        return view('components.profile-avatar');
     }
 }

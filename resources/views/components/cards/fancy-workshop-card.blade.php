@@ -1,6 +1,5 @@
-<x-card class="w-full xl:w-[400px] flex flex-col">
+<x-card class="w-full xl:w-[400px] flex flex-col group relative overflow-hidden cursor-pointer">
 
-    {{-- {{ dd($workshop->topics) }} --}}
     <x-card-header>
         <div class="flex justify-between items-start">
             <div>
@@ -48,39 +47,21 @@
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <x-bi-clock class="h-4 w-4" />
+                    <x-bi-clock class="h-4 w-4"  />
                     <span class="text-sm">{{ $workshop->duration }} minutes</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <x-gmdi-attach-money-o class="h-4 w-4" />
                     <span class="text-sm">${{ number_format($workshop->price / 100, 2) }}</span>
                 </div>
-                @if ($workshop->status === 'Upcoming')
-                    @if ($hasJoined)
-                        <div class="flex items-center gap-2">
-                            <a href="{{ $workshop->vc_link }}" class="text-sm text-blue-600 hover:underline">
-                                Join video call
-                            </a>
-                        </div>
-                    @endif
-                @endif
             </div>
         </div>
     </x-card-content>
-    <x-card-footer class="flex justify-between">
-        <a href="/workshops/{{ $workshop->id }}">
-            <x-button variant="outline">
-                View Details
-            </x-button>
+
+    <div
+        class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/0 flex items-end justify-center translate-y-full opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+        <a href="/workshops/{{ $workshop->id }}" class="text-white text-xl font-bold drop-shadow-xl mx-auto mb-16">
+            Learn More
         </a>
-        @if ($workshop->status === 'Upcoming')
-            @if ($hasJoined)
-                <span class="text-sm text-foreground">Already Joined</span>
-            @else
-                <x-button>
-                    Register Now
-                </x-button>
-            @endif
-        @endif
-    </x-card-footer>
+    </div>
 </x-card>
