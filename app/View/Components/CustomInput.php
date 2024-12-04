@@ -9,7 +9,9 @@ use Illuminate\View\Component;
 class CustomInput extends Component
 {
 
+    public $id;
     public $name;
+    public $label;
     public $placeholder;
     public $type;
     public $icon;
@@ -17,9 +19,11 @@ class CustomInput extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($name, $placeholder="", $type="text", $icon = null)
+    public function __construct($id="", $name="", $label="", $placeholder="", $type="text", $icon = null)
     {
+        $this->id = $id;
         $this->name = $name;
+        $this->label = $label;
         $this->placeholder = $placeholder;
         $this->type = $type;
         $this->icon = $icon;

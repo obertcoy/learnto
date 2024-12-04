@@ -11,17 +11,21 @@ class ProfileAvatar extends Component
     /**
      * Create a new component instance.
      */
+    public $user;
     public $src;
     public $alt;
     public $size;
     public $fallback;
+    public $redirect;
 
-    public function __construct($src = null, $alt = '', $size = 'h-10 w-10', $fallback = '')
+    public function __construct($user, $size = 'h-10 w-10', $redirect=true)
     {
-        $this->src = $src;
-        $this->alt = $alt;
+        $this->user = $user;
+        $this->src = $user->profile_picture_url;
+        $this->alt = $user->name;
         $this->size = $size;
-        $this->fallback = $fallback;
+        $this->redirect = $redirect;
+        $this->fallback = collect(explode(' ', $user->name))->map(fn($n) => strtoupper($n[0]))->join('');
     }
 
     public function render()

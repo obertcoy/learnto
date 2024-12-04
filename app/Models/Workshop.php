@@ -45,4 +45,19 @@ class Workshop extends Model
     {
         return $this->hasMany(Material::class);
     }
+
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rate');
+    }
+
+    public function ratingsCount()
+    {
+        return $this->ratings()->count();
+    }
+
+    public function reviewsCount()
+    {
+        return $this->reviews()->count();
+    }
 }

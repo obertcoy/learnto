@@ -19,7 +19,7 @@ class WorkshopFactory extends Factory
             'date' => $this->faker->dateTimeBetween('+1 week', '+6 months'),
             'status' => $this->faker->randomElement(['Upcoming', 'Completed']),
             'vc_link' => $this->faker->url,
-            'objectivs' => json_encode([
+            'objectives' => json_encode([
                 'Understanding REST APIs',
                 'Building Frontend with React',
                 'Deploying Applications with Docker',

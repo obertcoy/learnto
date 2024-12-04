@@ -13,8 +13,26 @@ class WorkshopController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index()
+    public function index(Request $request)
     {
+
+        $searchFilter = $request->input('search');
+        $topicFilter = $request->input('topics', []);
+        $durationFilter = $request->input('duration', 'any');
+
+        $startDuration = match($durationFilter){
+            'short' => 0,
+            'medium' => 120,
+            'long' => 240,
+            default => 0            
+        };
+
+        $endDuration = match($durationFilter){
+            'short' => 120,
+            'medium' => 240,
+            'long' => 9999,
+            default => 9999
+        };
 
         $workshops = Workshop::with([
             'instructor' => function ($query) {
@@ -22,17 +40,24 @@ class WorkshopController extends Controller
                     ->withCount('ratings')
                     ->withAvg('ratings as average_rating', 'rate');
             },
-            'topics:topic'
+            'topics' => function ($query) {
+                $query->select('topics.id', 'topics.topic');
+            },
         ])
-        ->paginate(9);
+            ->when($searchFilter, fn($filter) => $filter->where('title', 'like', "%{$filter}%"))
+            ->when(!empty($topicFilter), function ($query) use ($topicFilter) {
+                $query->whereHas('topics', function ($subQuery) use ($topicFilter) {
+                    $subQuery->whereIn('topics.id', $topicFilter);
+                });
+            })
+            ->when($durationFilter != 'any', fn($filter) => $filter->whereBetween('duration', [$startDuration, $endDuration]))
+            ->paginate(9);
 
         $topTopics = Topic::withCount('workshops')
-                    ->orderByDesc('workshops_count')
-                    ->limit(5)
-                    ->get(['id'. 'name']);
-        // $workshops = [];
-        // $topTopics = [];
-
+            ->orderByDesc('workshops_count')
+            ->limit(5)
+            ->get(['id' . 'name']);
+            
         return view('pages.explore', compact('workshops', 'topTopics'));
     }
 
@@ -73,8 +98,18 @@ class WorkshopController extends Controller
      */
     public function show(Workshop $workshop)
     {
-        return view('pages.workshop-show', compact('workshop'));
+        return view('pages.workshops-show', compact('workshop'));
     }
+
+    public function payment(Workshop $workshop)
+    {
+
+        $taxes = $workshop->price * 0.06;
+        $total = $workshop->price + $taxes;
+
+        return view('pages.payment', compact('workshop', 'taxes', 'total'));
+    }
+
 
     /**
      * Show the form for editing the specified resource.

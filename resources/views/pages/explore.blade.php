@@ -3,7 +3,7 @@
     <section>
 
         <h1 class="text-4xl font-bold !text-4xl !font-bold mb-4">Explore Workshops</h1>
-        <x-custom-input name="search" placeholder="Search workshops..." />
+        <x-custom-input id="explore-search-input" name="search" placeholder="Search workshops..." />
     </section>
 
 
@@ -12,26 +12,37 @@
             <div class="space-y-6">
                 <div>
                     <h2 class="text-lg font-semibold mb-2">Topics</h2>
-                    <div class="space-y-2">
+                    <form id="explore-topic-form" method="GET" action={{ route('workshops.explore') }} class="space-y-2">
                         @foreach ($topTopics as $topic)
                             <div class="flex items-center">
                                 <input type="checkbox" id="topic-{{ $topic->id }}" name="topics[]"
-                                    value="{{ $topic->id }}" class="checkbox" />
+                                    value="{{ $topic->id }}" class="explore-topic-checkbox"
+                                    {{ in_array($topic->id, request('topics', [])) ? 'checked' : '' }} />
                                 <label for="topic-{{ $topic->id }}" class="ml-2">{{ $topic->topic }}</label>
                             </div>
                         @endforeach
-                    </div>
+                        <input type="hidden" name="duration" value="{{ request('duration', 'any') }}">
+                    </form>
                 </div>
 
                 <div class="w-full">
                     <h2 class="text-lg font-semibold mb-2">Duration</h2>
-                    <select name="duration" class="w-full border border-input rounded-md">
-                        <option value="any" {{ old('duration', 'any') == 'any' ? 'selected' : '' }}>Any</option>
-                        <option value="short" {{ old('duration') == 'short' ? 'selected' : '' }}>0-2 hours</option>
-                        <option value="medium" {{ old('duration') == 'medium' ? 'selected' : '' }}>2-4 hours
-                        </option>
-                        <option value="long" {{ old('duration') == 'long' ? 'selected' : '' }}>4+ hours</option>
-                    </select>
+                    <form method="GET" action="{{ route('workshops.explore') }}" id="explore-duration-form">
+                        <select name="duration" class="w-full border border-input rounded-md"
+                            id="explore-duration-select">
+                            <option class="explore-duration-option" value="any"
+                                {{ request('duration', 'any') == 'any' ? 'selected' : '' }}>Any</option>
+                            <option class="explore-duration-option" value="short"
+                                {{ request('duration') == 'short' ? 'selected' : '' }}>0-2 hours</option>
+                            <option class="explore-duration-option" value="medium"
+                                {{ request('duration') == 'medium' ? 'selected' : '' }}>2-4 hours</option>
+                            <option class="explore-duration-option" value="long"
+                                {{ request('duration') == 'long' ? 'selected' : '' }}>4+ hours</option>
+
+                            <input type="hidden" name="topics[]" value="{{ implode(',', request('topics', [])) }}">
+
+                        </select>
+                    </form>
                 </div>
 
             </div>
@@ -41,7 +52,9 @@
         <div class="w-fit">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 @foreach ($workshops as $workshop)
-                    <x-cards.workshop-card :workshop="$workshop" />
+                <div class="explore-workshop-card">
+                    <x-cards.workshop-card :workshop="$workshop"  />
+                </div>
                 @endforeach
             </div>
         </div>
@@ -52,3 +65,34 @@
         {{ $workshops->links() }}
     </div>
 </x-app-layout>
+
+<script>
+
+    const workshopCards = document.querySelectorAll('.explore-workshop-card');
+
+
+    document.getElementById('explore-search-input').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+
+        workshopCards.forEach(card => {
+            const title = card.querySelector('.workshop-card-title').textContent.toLowerCase();
+
+            if (title.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+
+    document.querySelectorAll('.explore-topic-checkbox').forEach((element) => {
+        element.addEventListener('change', function() {
+            document.getElementById('explore-topic-form').submit();
+        });
+    });
+
+    document.getElementById('explore-duration-select').addEventListener('change', function() {
+        document.getElementById('explore-duration-form').submit();
+    })
+</script>
