@@ -24,6 +24,7 @@ class WorkshopFactory extends Factory
                 'Building Frontend with React',
                 'Deploying Applications with Docker',
             ]),
+            'is_instructor' => true,
             'instructor_id' => 1,
         ];
     }

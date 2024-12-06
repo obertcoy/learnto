@@ -18,6 +18,7 @@ $sizeClasses = [
 
 <button
     {{ $attributes->merge(['class' => "$baseClasses {$variantClasses[$variant]} {$sizeClasses[$size]}"]) }}
+    type="submit"
 >
     {{ $slot }}
 </button>

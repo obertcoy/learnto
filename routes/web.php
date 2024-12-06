@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(UserController::class)->group(function () {
         Route::get('/users/{user}', 'show')->name('users.show');
+        Route::patch('/users/{user}', 'update')->name('users.update');
     });
 
     Route::controller(WorkshopController::class)->group(function() {

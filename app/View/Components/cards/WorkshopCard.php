@@ -9,7 +9,7 @@ use Illuminate\View\Component;
 
 class WorkshopCard extends Component
 {
-    public $workshop;
+public $workshop;
     public $hasJoined;
 
     /**

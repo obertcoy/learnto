@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -48,7 +49,23 @@ class UserController extends Controller
             default => []
         };
 
-        return view('pages.users-show', compact('user', 'tabs', 'activeTab', 'data'));
+        $totalSumOfRatings = Workshop::with('ratings')
+        ->get()
+        ->sum(function ($workshop) {
+            return $workshop->ratings->sum('rate');
+        });
+
+        $totalStudents = Workshop::with('users')
+        ->get()
+        ->sum(function ($workshop) {
+            return $workshop->users->count();
+        });
+
+        $averageRating = $totalStudents > 0 ? $totalSumOfRatings / $totalStudents : 0;
+
+        $createdWorkshops = $user->createdWorkshopsCount();
+
+        return view('pages.users-show', compact('user', 'tabs', 'activeTab', 'data', 'averageRating', 'totalStudents', 'createdWorkshops'));
     }
 
     private function getJoinedWorkshops(User $user)
@@ -82,7 +99,14 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        if(Auth::user() == $user){
+            $user->biography = $request->input('biography');
+            $user->save();
+
+            return redirect()->back()->with('success', 'User updated successfully!');
+        }
+
+        return redirect()->back()->with('failed', 'Update failed...'); 
     }
 
     /**
