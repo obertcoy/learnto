@@ -6,29 +6,25 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class CustomInput extends Component
+class CustomSelect extends Component
 {
-
     public $id;
     public $name;
     public $label;
     public $placeholder;
-    public $type;
-    public $icon;
-    public $iconText;
-
+    public $data;
+    public $key;
     /**
      * Create a new component instance.
      */
-    public function __construct($id = "", $name = "", $label = "", $placeholder = "", $type = "text", $icon = null, $iconText = null)
+    public function __construct($id = "", $name = "", $label = "", $placeholder = "", $data, $key)
     {
         $this->id = $id;
         $this->name = $name;
         $this->label = $label;
         $this->placeholder = $placeholder;
-        $this->type = $type;
-        $this->icon = $icon;
-        $this->iconText = $iconText;
+        $this->data = $data;
+        $this->key = $key;
     }
 
     /**
@@ -36,6 +32,6 @@ class CustomInput extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.custom-input');
+        return view('components.custom-select');
     }
 }

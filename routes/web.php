@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(WorkshopController::class)->group(function() {
         Route::get('/workshop/{workshop}/payment', 'payment')->name('workshops.payment');
+        Route::get('/workshop/create', 'create')->name('workshops.create');
     });
     
 });

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -50,16 +51,16 @@ class UserController extends Controller
         };
 
         $totalSumOfRatings = Workshop::with('ratings')
-        ->get()
-        ->sum(function ($workshop) {
-            return $workshop->ratings->sum('rate');
-        });
+            ->get()
+            ->sum(function ($workshop) {
+                return $workshop->ratings->sum('rate');
+            });
 
         $totalStudents = Workshop::with('users')
-        ->get()
-        ->sum(function ($workshop) {
-            return $workshop->users->count();
-        });
+            ->get()
+            ->sum(function ($workshop) {
+                return $workshop->users->count();
+            });
 
         $averageRating = $totalStudents > 0 ? $totalSumOfRatings / $totalStudents : 0;
 
@@ -71,8 +72,8 @@ class UserController extends Controller
     private function getJoinedWorkshops(User $user)
     {
         $workshops = $user->workshops()
-                    ->orderBy('date', 'desc')
-                    ->get();
+            ->orderBy('date', 'desc')
+            ->get();
 
         return $workshops;
     }
@@ -80,8 +81,8 @@ class UserController extends Controller
     private function getCreatedWorkshops(User $user)
     {
         $workshops = $user->instructor()
-                    ->orderBy('date', 'desc')
-                    ->get();
+            ->orderBy('date', 'desc')
+            ->get();
 
         return $workshops;
     }
@@ -99,14 +100,34 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if(Auth::user() == $user){
-            $user->biography = $request->input('biography');
-            $user->save();
-
-            return redirect()->back()->with('success', 'User updated successfully!');
+        if (!Gate::allows('current-user', $user)) {
+            abort(403, 'Unauthorized action.');
+            return redirect()->back()->with('failed', 'Unauthorized action.');
         }
 
-        return redirect()->back()->with('failed', 'Update failed...'); 
+        if ($request->input('become_instructor')) {
+            if (strlen($user->biography) < 50) {
+                return back()->with('failed', 'Your bio must be at least 50 characters long to become an instructor.');
+            }
+
+            $user->update([
+                'is_instructor' => true,
+            ]);
+            
+            return redirect()
+            ->back()
+            ->with('success', 'Congratulations! You are now an instructor.');
+        }
+        
+        if ($request->input('biography')) {
+
+            $user->biography = $request->input('biography');
+            $user->save();
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', 'Bio updated successfully!');
     }
 
     /**

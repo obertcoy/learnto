@@ -6,15 +6,17 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class CustomLabel extends Component
+class Toast extends Component
 {
-    public $gap;
+    public $type;
+    public $text;
     /**
      * Create a new component instance.
      */
-    public function __construct($gap = 2)
+    public function __construct($type, $text)
     {
-        $this->gap = $gap;
+        $this->type = $type;
+        $this->text = $text;
     }
 
     /**
@@ -22,6 +24,6 @@ class CustomLabel extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.custom-label');
+        return view('components.toast');
     }
 }

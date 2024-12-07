@@ -50,7 +50,7 @@
                 <x-custom-label>
                     <x-custom-icon icon="money" />
 
-                    <span class="text-sm">${{ number_format($workshop->price / 100, 2) }}</span>
+                    <span class="text-sm">Rp {{ number_format($workshop->price, 2) }}</span>
                 </x-custom-label>
             </div>
         </div>

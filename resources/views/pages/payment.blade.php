@@ -44,7 +44,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
                         </svg>
-                        <span>Price: ${{ number_format($workshop->price / 100, 2) }}</span>
+                        <span>Price: Rp {{$workshop->price}}</span>
                     </x-custom-label>
 
 
@@ -76,19 +76,19 @@
 
                     <div class="flex flex-row justify-between">
                         <span>Workshop Price</span>
-                        <span>${{ number_format($workshop->price / 100, 2) }}</span>
+                        <span>Rp {{$workshop->price}}</span>
                     </div>
 
                     <div class="flex flex-row justify-between">
                         <span>Taxes (6%)</span>
-                        <span>${{ number_format($taxes / 100, 2) }}</span>
+                        <span>Rp {{$taxes}}</span>
                     </div>
 
                     <hr>
 
                     <div class="flex flex-row justify-between text-lg font-bold">
                         <span>Total</span>
-                        <span>${{ number_format(($total / 100) * 0.6, 2) }}</span>
+                        <span>Rp {{$total}}</span>
                     </div>
 
 

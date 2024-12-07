@@ -47,92 +47,76 @@
 
             <x-card>
 
-                @if (!$user->is_instructor)
-                    @if (auth()->user() == $user)
-                        <x-card-header class="flex flex-col items-center text-center gap-3">
+                @if (auth()->user() == $user && !$user->is_instructor)
+                    <x-card-header class="flex flex-col items-center text-center gap-3">
+                        <div>
+                            <h2 class="text-xl font-semibold">Become an Instructor</h2>
+                            <x-card-description class="text-lg">Share your knowledge by creating
+                                workshops</x-card-description>
+                        </div>
 
-                            <div>
-                                <h2 class="text-xl font-semibold">Become an Instructor</h2>
-                                <x-card-description class="text-lg">Share your knowledge by creating
-                                    workshops</x-card-description>
-                            </div>
+                        <form action="{{ route('users.update', $user) }}" method="post"
+                            class="flex flex-col w-full gap-2">
+                            @csrf
+                            @method('PATCH')
 
-                            <form action="{{ route('users.update', $user) }}" method="post"
-                                class="flex flex-col w-full gap-2">
-                                @csrf
-                                @method('PATCH')
+                            <input type="hidden" name="become_instructor" value="true">
+                            <x-button variant="default">
+                                Become an Instructor
+                            </x-button>
 
-                                <x-button variant="default">
-                                    Become an Instructor
-                                </x-button>
-
-                                <span class="text-sm text-yellow-600">Please fill out your bio (at least 50 characters)
-                                    to
-                                    become an instructor.</span>
-                            </form>
-
-                        </x-card-header>
-                    @endif
-                @else
+                            <span class="text-sm text-yellow-600">Please fill out your bio (at least 50 characters) to
+                                become an instructor.</span>
+                        </form>
+                    </x-card-header>
+                @elseif (auth()->user() == $user || $user->is_instructor)
                     <x-card-header>
                         <div class="flex flex-row justify-between">
                             <h2 class="text-lg font-semibold">Instructor Profile</h2>
-                            <x-badge :variant="$user->is_insturctor ? 'default' : 'secondary'">
-
-                                @if ($user->is_insturctor)
-                                    Instructor
-                                @else
-                                    Not an Instructor
-                                @endif
+                            <x-badge :variant="$user->is_instructor ? 'default' : 'secondary'">
+                                {{ $user->is_instructor ? 'Instructor' : 'Not an Instructor' }}
                             </x-badge>
                         </div>
                     </x-card-header>
 
-                    @if (auth()->user() == $user)
-                        <x-card-content class="flex flex-col gap-1 font-medium">
-
+                    <x-card-content class="flex flex-col gap-1 font-medium">
+                        @if ($user->is_instructor)
                             <x-custom-label>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-yellow-400"
-                                    viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
-                                </svg>
+                                <x-custom-icon icon="star" />
+
                                 {{ number_format($averageRating, 1) }} Average Rating
                             </x-custom-label>
                             <x-custom-label>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                </svg>
+                                <x-custom-icon icon="users" />
 
                                 {{ $totalStudents }} Total Students
                             </x-custom-label>
                             <x-custom-label>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                                </svg>
-
-
+                                <x-custom-icon icon="workshop" />
                                 {{ $createdWorkshops }} Workshops Created
                             </x-custom-label>
+                        @else
+                            <x-card-description class="w-full h-full flex items-center justify-center p-0">
+                                User is not an instructor
+                            </x-card-description>
+                        @endif
+                    </x-card-content>
+                @else
+                    <x-card-header>
+                        <div class="flex flex-row justify-between">
+                            <h2 class="text-lg font-semibold">Instructor Profile</h2>
+                            <x-badge :variant="$user->is_instructor ? 'default' : 'secondary'">
+                                {{ $user->is_instructor ? 'Instructor' : 'Not an Instructor' }}
+                            </x-badge>
+                        </div>
+                    </x-card-header>
 
-                        </x-card-content>
-                    @else
                     <x-card-content class="border border-border rounded-md m-3 p-0 pt-3 pb-3">
                         <x-card-description class="w-full h-full flex items-center justify-center p-0">
                             User is not an instructor
                         </x-card-description>
                     </x-card-content>
-                    @endif
-
                 @endif
-
-
-
-
 
 
             </x-card>
@@ -168,6 +152,12 @@
 
 
     </section>
+    {{-- @dd(session('success')) --}}
 
+    @if (session('success'))
+        <x-toast type="success" text="{{ session('success') }}" />
+    @elseif(session('failed'))
+        <x-toast type="failed" text="{{ session('failed') }}" />
+    @endif
 
 </x-app-layout>

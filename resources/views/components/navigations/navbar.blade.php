@@ -33,7 +33,7 @@
 
                 @if (auth()->user()->is_instructor)
                     <li class="hover:text-muted-foreground transition-all">
-                        <a href={{ route('workshops.explore') }}>
+                        <a href={{ route('workshops.create') }}>
                             Create Workshop
                         </a>
                     </li>
@@ -63,10 +63,10 @@
 
                                     <x-button variant="outline" class="w-full">
                                         <a href="{{ route('users.show', auth()->user()) }}">
-                                            Edit Profile
-                                        </a>
+                                        Edit Profile
                                     </x-button>
-
+                                </a>
+                                    
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <x-button variant="default" class="w-full">

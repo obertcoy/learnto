@@ -57,7 +57,7 @@ class WorkshopController extends Controller
             ->orderByDesc('workshops_count')
             ->limit(5)
             ->get(['id' . 'name']);
-            
+
         return view('pages.explore', compact('workshops', 'topTopics'));
     }
 
@@ -82,7 +82,7 @@ class WorkshopController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.workshops-create');
     }
 
     /**

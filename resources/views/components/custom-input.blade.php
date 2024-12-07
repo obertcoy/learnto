@@ -1,7 +1,7 @@
 <div class="relative">
 
     @if ($label)
-        <p class= "text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2">
+        <p class= "text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-3">
             {{ $label }}</p>
     @endif
     <input id="{{ $id }}" name="{{ $name }}" placeholder="{{ $placeholder }}" type="{{ $type }}"
@@ -13,5 +13,10 @@
         disabled:opacity-50 md:text-sm">
     @if ($icon)
         <x-dynamic-component :component="$icon" class="absolute inset-0 left-3 top-1/2 transform -translate-y-1/2 z-10" />
+    @endif
+    @if ($iconText)
+        <span class="absolute inset-0 left-3 top-1/2 transform -translate-y-1/2 z-10 font-semibold">
+            {{$iconText}}
+        </span>
     @endif
 </div>
