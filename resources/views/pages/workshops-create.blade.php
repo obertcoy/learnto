@@ -12,13 +12,19 @@
 
             <x-card-content class="flex flex-col gap-3 mt-3">
 
-                <x-custom-input name="create-title-input" label="Workshop Title" placeholder="Enter the title of your workshop"/>
+                <x-custom-input name="create-title-input" label="Workshop Title"
+                    placeholder="Enter the title of your workshop" />
 
-                <x-custom-textarea name="create-description-input" label="Description" placeholder="Describe your workshop"/>
+                <x-custom-textarea name="create-description-input" label="Description"
+                    placeholder="Describe your workshop" />
 
                 <div class="flex flex-row w-full gap-3">
-                    
 
+                    <x-custom-single-select id="create-topic-select" name="create-topic-select" label="Topic"
+                        placeholder="Select the topics of your workshop" :data="$topics" :valueKey="'topic'" />
+
+                    <x-custom-single-select id="create-time-select" name="create-topic-select" label="Topic"
+                        placeholder="Select the topics of your workshop" :data="$topics" :valueKey="'topic'" />
                 </div>
 
 

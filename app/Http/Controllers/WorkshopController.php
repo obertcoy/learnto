@@ -20,14 +20,14 @@ class WorkshopController extends Controller
         $topicFilter = $request->input('topics', []);
         $durationFilter = $request->input('duration', 'any');
 
-        $startDuration = match($durationFilter){
+        $startDuration = match ($durationFilter) {
             'short' => 0,
             'medium' => 120,
             'long' => 240,
-            default => 0            
+            default => 0
         };
 
-        $endDuration = match($durationFilter){
+        $endDuration = match ($durationFilter) {
             'short' => 120,
             'medium' => 240,
             'long' => 9999,
@@ -82,7 +82,10 @@ class WorkshopController extends Controller
      */
     public function create()
     {
-        return view('pages.workshops-create');
+
+        $topics = Topic::all();
+
+        return view('pages.workshops-create', compact('topics'));
     }
 
     /**
