@@ -31,9 +31,16 @@
             @endisset --}}
 
     <!-- Page Content -->
-    <main class="bg-background relative min-h-screen flex flex-col container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-foreground mt-4 gap-6">
+    <main
+        class="bg-background relative min-h-screen flex flex-col container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-foreground mt-4 gap-6">
         {{ $slot }}
     </main>
+
+    @if (session('success'))
+        <x-toast type="success" text="{{ session('success') }}" />
+    @elseif(session('failed'))
+        <x-toast type="failed" text="{{ session('failed') }}" />
+    @endif
 
     <x-navigations.footer />
 </body>

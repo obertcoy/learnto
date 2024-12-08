@@ -28,7 +28,7 @@
                 <x-custom-icon icon="users" />
 
 
-                <span>{{ $workshop->attendees ?? 0 }} attendees</span>
+                <span>{{ $workshop->usersCount()}} attendees</span>
             </x-custom-label>
             @if ($workshop->status == 'Completed')
                 <x-custom-label>

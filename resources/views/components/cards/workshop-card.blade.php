@@ -51,17 +51,9 @@
                 <x-custom-label>
                     <x-custom-icon icon="money" />
 
-                    <span class="text-sm">Rp {{$workshop->price}}</span>
+                    <span class="text-sm">Rp {{ $workshop->price }}</span>
                 </x-custom-label>
-                @if ($workshop->status === 'Upcoming')
-                    @if ($hasJoined)
-                        <div class="flex items-center gap-2">
-                            <a href="{{ $workshop->vc_link }}" class="text-sm text-blue-600 hover:underline">
-                                Join video call
-                            </a>
-                        </div>
-                    @endif
-                @endif
+
             </div>
         </div>
     </x-card-content>
@@ -73,7 +65,11 @@
         </a>
         @if ($workshop->status === 'Upcoming')
             @if ($hasJoined)
-                <span class="text-sm text-foreground">Already Joined</span>
+                <div class="flex items-center gap-2">
+                    <a href="{{ $workshop->vc_link }}" class=" text-blue-600 hover:underline">
+                        Join video call
+                    </a>
+                </div>
             @else
                 <x-button>
                     <a href={{ route('workshops.payment', $workshop) }}>

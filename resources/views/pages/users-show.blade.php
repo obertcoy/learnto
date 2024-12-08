@@ -131,7 +131,6 @@
                 @endforeach
             </div>
 
-            {{-- @dd($data) --}}
 
             @if (count($data) > 0)
 
@@ -152,12 +151,6 @@
 
 
     </section>
-    {{-- @dd(session('success')) --}}
 
-    @if (session('success'))
-        <x-toast type="success" text="{{ session('success') }}" />
-    @elseif(session('failed'))
-        <x-toast type="failed" text="{{ session('failed') }}" />
-    @endif
 
 </x-app-layout>

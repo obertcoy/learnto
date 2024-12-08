@@ -19,7 +19,7 @@ public $workshop;
     {
         $this->workshop = $workshop;
         // $this->hasJoined = Auth::check() && $workshop->users()->contains(Auth::id());
-        $this->hasJoined = false;
+        $this->hasJoined = $workshop->users->contains(Auth::user());
     }
 
     /**

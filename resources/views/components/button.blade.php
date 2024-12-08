@@ -7,6 +7,7 @@ $variantClasses = [
     'secondary' => 'bg-gray-200 text-gray-700 hover:bg-gray-300',
     'ghost' => 'hover:bg-gray-100 text-gray-700',
     'link' => 'text-primary underline hover:no-underline',
+    'muted' => 'bg-muted text-muted-foreground hover:bg-border outline outline-1 outline-border outline-offset-2 cursor-not-allowed',
 ];
 $sizeClasses = [
     'default' => 'h-10 px-4 py-2',

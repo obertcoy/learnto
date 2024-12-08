@@ -14,19 +14,21 @@ class CustomInput extends Component
     public $label;
     public $placeholder;
     public $type;
+    public $value;
     public $icon;
     public $iconText;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id = "", $name = "", $label = "", $placeholder = "", $type = "text", $icon = null, $iconText = null)
+    public function __construct($id = "", $name = "", $label = "", $placeholder = "", $type = "text", $value = '', $icon = null, $iconText = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->label = $label;
         $this->placeholder = $placeholder;
         $this->type = $type;
+        $this->value = $value;
         $this->icon = $icon;
         $this->iconText = $iconText;
     }

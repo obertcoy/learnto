@@ -15,6 +15,17 @@ class Workshop extends Model
         'objectives' => 'array'
     ];
 
+    protected $fillable = [
+        'name',
+        'description',
+        'objectives',
+        'date',
+        'duration',
+        'price',
+        'vc_link',
+        'instructor_id'
+    ];
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_workshops', 'workshop_id', 'user_id')
@@ -53,11 +64,16 @@ class Workshop extends Model
 
     public function ratingsCount()
     {
-        return $this->ratings()->count();
+        return $this->ratings()->count() ?? 0;
     }
 
     public function reviewsCount()
     {
-        return $this->reviews()->count();
+        return $this->reviews()->count() ?? 0;
+    }
+
+    public function usersCount()
+    {
+        return $this->users()->count() ?? 0;
     }
 }

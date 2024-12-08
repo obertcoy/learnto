@@ -113,12 +113,12 @@ class UserController extends Controller
             $user->update([
                 'is_instructor' => true,
             ]);
-            
+
             return redirect()
-            ->back()
-            ->with('success', 'Congratulations! You are now an instructor.');
+                ->back()
+                ->with('success', 'Congratulations! You are now an instructor.');
         }
-        
+
         if ($request->input('biography')) {
 
             $user->biography = $request->input('biography');
@@ -136,5 +136,21 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+    public function joinWorkshop(Workshop $workshop)
+    {
+
+        if ($workshop->users->contains(Auth::user()->id)) {
+            return back()->with('failed', 'You are already registered for this workshop!');
+        }
+
+        if ($workshop->status == 'Completed') {
+            return back()->with('failed', 'This workshop is already completed!');
+        }
+
+        $workshop->users()->attach(Auth::user()->id);
+
+        return redirect()->route('workshops.show', $workshop)->with('success', 'You have successfully joined the workshop!');
     }
 }

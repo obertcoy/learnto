@@ -47,26 +47,21 @@
                         <div
                             class="hidden group-focus-within:block absolute -bottom-3 left-0 -translate-x-1/2 translate-y-full w-64 h-fit z-10">
 
-                            <x-card class="flex flex-col gap-3 p-3">
+                            <x-card class="flex flex-col">
 
-                                <x-card-header class="p-1 !p-1">
-                                    <div class="flex flex-row items-center gap-3 ">
+                                <x-card-header class="p-0 hover:bg-muted transition-colors relative">
+                                    <x-custom-label :gap="3" class="flex items-center gap-3 z-10">
                                         <x-profile-avatar :user="auth()->user()" :redirect="false" />
-
                                         <h2 class="text-lg font-medium truncate">{{ auth()->user()->name }}</h2>
-                                    </div>
+                                    </x-custom-label>
+                                    <a href="{{ route('users.show', auth()->user()) }}" class="absolute inset-0 z-0"></a>
                                 </x-card-header>
+
 
                                 <hr>
 
                                 <x-card-content class="w-full p-1 !p-1 flex flex-col gap-2">
 
-                                    <x-button variant="outline" class="w-full">
-                                        <a href="{{ route('users.show', auth()->user()) }}">
-                                        Edit Profile
-                                    </x-button>
-                                </a>
-                                    
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <x-button variant="default" class="w-full">

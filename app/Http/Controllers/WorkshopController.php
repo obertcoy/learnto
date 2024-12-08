@@ -6,6 +6,7 @@ use App\Models\Topic;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class WorkshopController extends Controller
 {
@@ -18,6 +19,9 @@ class WorkshopController extends Controller
 
         $searchFilter = $request->input('search');
         $topicFilter = $request->input('topics', []);
+        $topicFilter = array_filter($topicFilter, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
         $durationFilter = $request->input('duration', 'any');
 
         $startDuration = match ($durationFilter) {
@@ -44,8 +48,9 @@ class WorkshopController extends Controller
                 $query->select('topics.id', 'topics.topic');
             },
         ])
-            ->when($searchFilter, fn($filter) => $filter->where('title', 'like', "%{$filter}%"))
-            ->when(!empty($topicFilter), function ($query) use ($topicFilter) {
+            ->when($searchFilter, function ($query) use ($searchFilter) {
+                $query->where('name', 'like', "%{$searchFilter}%");
+            })->when(!empty($topicFilter), function ($query) use ($topicFilter) {
                 $query->whereHas('topics', function ($subQuery) use ($topicFilter) {
                     $subQuery->whereIn('topics.id', $topicFilter);
                 });
@@ -82,10 +87,15 @@ class WorkshopController extends Controller
      */
     public function create()
     {
-
         $topics = Topic::all();
+        $times = [];
+        for ($hour = 0; $hour < 24; $hour++) {
+            foreach (["00", "30"] as $minute) {
+                $times[] = sprintf("%02d:%s", $hour, $minute);
+            }
+        }
 
-        return view('pages.workshops-create', compact('topics'));
+        return view('pages.workshops-create', compact('topics', 'times'));
     }
 
     /**
@@ -93,7 +103,43 @@ class WorkshopController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'create-name-input' => 'required|string|max:255',
+            'create-description-input' => 'required|string',
+            'create-objectives-input' => 'required|string|max:255',
+            'create-topic-select' => 'required|exists:topics,id',
+            'create-date-input' => 'required|date|after:now',
+            'create-time-select' => 'required|date_format:H:i',
+            'create-duration-input' => 'required|integer|min:1',
+            'create-price-input' => 'required|integer|min:0',
+            'create-link-input' => 'required|url',
+        ]);
+
+        $objectives = explode("-", $validated['create-objectives-input']);
+        $objectives = array_filter($objectives, fn($objective) => !empty(trim($objective)));
+        $objectives = array_map(fn($objective) => trim($objective), $objectives);
+
+        $objectives = array_values($objectives);
+
+
+        $datetime = $validated['create-date-input'] . ' ' . $validated['create-time-select'];
+
+        $workshop = Workshop::create([
+            'name' => $validated['create-name-input'],
+            'description' => $validated['create-description-input'],
+            'objectives' => $objectives,
+            'date' => $datetime,
+            'duration' => $validated['create-duration-input'],
+            'price' => $validated['create-price-input'],
+            'vc_link' => $validated['create-link-input'],
+            'instructor_id' => Auth::user()->id,
+        ]);
+
+        $workshop->topics()->attach($validated['create-topic-select']);
+        $workshop->update(['objectives' => $objectives]);
+
+
+        return redirect()->route('workshops.show', $workshop)->with('success', 'Workshop created successfully!');
     }
 
     /**
@@ -101,16 +147,24 @@ class WorkshopController extends Controller
      */
     public function show(Workshop $workshop)
     {
-        return view('pages.workshops-show', compact('workshop'));
+        if (!Gate::allows('current-user', $workshop->instructor_id)) {
+            return view('pages.workshops-show', compact('workshop'));
+        }
+
+        $attendees = $workshop->users()->paginate(9);
+        return view('pages.workshops-show', compact('workshop', 'attendees'));
     }
 
     public function payment(Workshop $workshop)
     {
+        if ($workshop->users->contains(Auth::user())) {
+            return redirect()->back()->with('failed', 'You have already registered for this workshop.');
+        }
 
         $taxes = $workshop->price * 0.06;
         $total = $workshop->price + $taxes;
 
-        return view('pages.payment', compact('workshop', 'taxes', 'total'));
+        return view('pages.workshops-payment', compact('workshop', 'taxes', 'total'));
     }
 
 
@@ -127,7 +181,28 @@ class WorkshopController extends Controller
      */
     public function update(Request $request, Workshop $workshop)
     {
-        //
+        if (!Gate::allows('current-user', $workshop->instructor_id)) {
+            return back()->with('failed', 'Unauthorized action.');
+        }
+
+        if ($request->input('complete_workshop')) {
+            if (!$request->input('complete_workshop')) {
+                return back()->with('failed', 'Workshop can be completed after the planned date.');
+            }
+
+            $workshop->update([
+                'status' => 'Completed',
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('success', 'Workshop completed successfully.');
+        }
+
+
+        return redirect()
+            ->back()
+            ->with('success', 'Workshop updated successfully!');
     }
 
     /**
