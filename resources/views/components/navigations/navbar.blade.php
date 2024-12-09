@@ -49,7 +49,7 @@
 
                             <x-card class="flex flex-col">
 
-                                <x-card-header class="p-0 hover:bg-muted transition-colors relative">
+                                <x-card-header class="py-6 px-6 hover:bg-muted transition-colors relative">
                                     <x-custom-label :gap="3" class="flex items-center gap-3 z-10">
                                         <x-profile-avatar :user="auth()->user()" :redirect="false" />
                                         <h2 class="text-lg font-medium truncate">{{ auth()->user()->name }}</h2>
