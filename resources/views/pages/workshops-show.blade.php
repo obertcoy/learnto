@@ -66,42 +66,59 @@
                                 <span>{{ $workshop->instructor->name }}</span>
                             </x-custom-label>
 
-                            @if ($workshop->users->contains(auth()->user()) && $workshop->status == 'Upcoming')
-                                <div class="flex items-center">
-                                    <a href="{{ $workshop->vc_link }}" class=" text-blue-600 hover:underline">
-                                        Join video call
-                                    </a>
-                                </div>
-                            @endif
+                            @auth
+
+                                @if ($workshop->users->contains(auth()->user()) && $workshop->status == 'Upcoming')
+                                    <div class="flex items-center">
+                                        <a href="{{ $workshop->vc_link }}" class=" text-blue-600 hover:underline">
+                                            Join video call
+                                        </a>
+                                    </div>
+                                @endif
+
+                            @endauth
+
                         </div>
                         <div class="mt-6">
-                            @if ($workshop->status == 'Upcoming')
-                                @if (auth()->user()->id === $workshop->instructor_id)
-                                    <form action="{{ route('workshops.update', $workshop) }}" method="POST"
-                                        class="flex flex-col w-full gap-2">
-                                        @csrf
-                                        @method('PATCH')
 
-                                        <input type="hidden" name="complete_workshop"
-                                            value="{{ $workshop->date >= now() ? true : false }}">
-                                        <x-button variant="{{ $workshop->date->isPast() ? 'default' : 'muted' }}">
-                                            Complete Workshop
-                                        </x-button>
+                            @auth
 
-                                        <span class="text-sm text-yellow-600 mx-auto">Workshop can only be completed
-                                            after the
-                                            planned date.</span>
-                                    </form>
+                                @if ($workshop->status == 'Upcoming')
+                                    @if (auth()->user()->id === $workshop->instructor_id)
+                                        <form action="{{ route('workshops.update', $workshop) }}" method="POST"
+                                            class="flex flex-col w-full gap-2">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <input type="hidden" name="complete_workshop"
+                                                value="{{ $workshop->date >= now() ? true : false }}">
+                                            <x-button variant="{{ $workshop->date->isPast() ? 'default' : 'muted' }}">
+                                                Complete Workshop
+                                            </x-button>
+
+                                            <span class="text-sm text-yellow-600 mx-auto">Workshop can only be completed
+                                                after the
+                                                planned date.</span>
+                                        </form>
+                                    @else
+                                        <x-register-workshop-button :workshop="$workshop" class="w-full" />
+                                    @endif
                                 @else
-                                    <x-register-workshop-button :workshop="$workshop" class="w-full" />
+                                    <x-button variant="muted" class="w-full">
+                                        Completed
+                                    </x-button>
                                 @endif
-                            @else
-                                <x-button variant="muted" class="w-full">
-                                    Completed
-                                </x-button>
-                            @endif
+
+                            @endauth
+
+                            @guest
+
+                                <x-register-workshop-button :workshop="$workshop" class="w-full" />
+
+                            @endguest
 
                         </div>
+
                     </x-card-content>
                 </x-card>
 
@@ -109,46 +126,67 @@
         </div>
 
 
-        @if (auth()->user()->id === $workshop->instructor_id)
+        @auth
 
-            <div class="flex flex-col gap-3">
+            @if (auth()->user()->id === $workshop->instructor_id)
+                <div class="flex flex-col gap-3">
 
-                <h2 class="text-2xl font-semibold mb-4 !text-2xl !font-semibold">Attendees
-                    ({{ $workshop->usersCount() }})</h2>
-                <div class="grid grid-cols-3 gap-6">
-                    @foreach ($attendees as $attendant)
-                        <div class="flex flex-row gap-3 items-center">
-                            <x-profile-avatar :user="$attendant" size="h-16 w-16" />
-                            <span>{{ $attendant->name }}</span>
-                        </div>
-                    @endforeach
+                    <h2 class="text-2xl font-semibold mb-4 !text-2xl !font-semibold">Attendees
+                        ({{ $workshop->usersCount() }})</h2>
+                    <div class="grid grid-cols-3 gap-6">
+                        @foreach ($attendees as $attendant)
+                            <div class="flex flex-row gap-3 items-center">
+                                <x-profile-avatar :user="$attendant" size="h-16 w-16" />
+                                <span>{{ $attendant->name }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+
                 </div>
+                {{ $attendees->links() }}
+            @else
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4 !text-2xl !font-semibold">About the Instructor</h2>
+                    <div class="flex items-center space-x-4">
+                        <x-profile-avatar :user="$workshop->instructor" size="h-16 w-16" />
+                        <div>
+                            <h3 class="text-xl font-semibold">{{ $workshop->instructor->name }}</h3>
+                            <div class="flex items-center">
+                                @if ($workshop->instructor->ratings_count > 0)
+                                    <x-custom-icon icon="star" />
 
-            </div>
-            {{ $attendees->links() }}
-        @else
-            <div>
-                <h2 class="text-2xl font-semibold mb-4 !text-2xl !font-semibold">About the Instructor</h2>
-                <div class="flex items-center space-x-4">
-                    <x-profile-avatar :user="$workshop->instructor" size="h-16 w-16" />
-                    <div>
-                        <h3 class="text-xl font-semibold">{{ $workshop->instructor->name }}</h3>
-                        <div class="flex items-center">
-                            @if ($workshop->instructor->ratings_count > 0)
-                                <x-custom-icon icon="star" />
-
-                                <span
-                                    class="text-sm text-gray-600 ml-1">{{ number_format($workshop->instructor->average_rating, 1) ?? 'N/A' }}
-                                    from {{ $workshop->instructor->ratings_count }}</span>
-                            @endif
+                                    <span
+                                        class="text-sm text-gray-600 ml-1">{{ number_format($workshop->instructor->average_rating, 1) ?? 'N/A' }}
+                                        from {{ $workshop->instructor->ratings_count }}</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
+                    <p class="mt-4">
+                        {{ $workshop->instructor->biography }}
+                    </p>
                 </div>
-                <p class="mt-4">
-                    {{ $workshop->instructor->biography }}
-                </p>
-            </div>
-        @endif
+            @endif
+
+        @endauth
+        
+        
     </section>
+    <x-modal-overlay>
+
+            <x-card>
+                <x-card-title>
+                    <h2>Congratulations!!</h2>
+                </x-card-title>
+
+                <x-card-content>
+
+                    Test
+
+                </x-card-content>
+
+            </x-card>
+
+    </x-modal-overlay>
 
 </x-app-layout>

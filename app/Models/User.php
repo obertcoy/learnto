@@ -52,24 +52,25 @@ class User extends Authenticatable
     public function workshops()
     {
         return $this->belongsToMany(Workshop::class, 'user_workshops', 'user_id', 'workshop_id')
-                    ->withTimestamps();
+            ->withPivot('is_congratulations_shown')
+            ->withTimestamps();
     }
-    
+
     public function ratings()
     {
         return $this->hasMany(Rating::class);
     }
-    
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
-    
+
     public function instructor()
     {
         return $this->hasMany(Workshop::class, 'instructor_id');
     }
-    
+
     public function createdWorkshopsCount()
     {
         return $this->instructor()->count();

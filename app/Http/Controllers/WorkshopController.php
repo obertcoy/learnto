@@ -152,7 +152,17 @@ class WorkshopController extends Controller
         }
 
         $attendees = $workshop->users()->paginate(9);
-        return view('pages.workshops-show', compact('workshop', 'attendees'));
+        $showCongratulationsModal = false;
+
+        if(Auth::user()->id != $workshop->instructor_id && $workshop->status == 'Completed'){
+            
+            $userPivot = $workshop->users()->where('user_id', '=', Auth::user()->id)->first();
+
+            $showCongratulationsModal = !$userPivot->pivot->is_congratulations_shown;
+
+        }
+
+        return view('pages.workshops-show', compact('workshop', 'attendees', 'showCongratulationsModal'));
     }
 
     public function payment(Workshop $workshop)

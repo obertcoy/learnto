@@ -29,6 +29,7 @@ class Workshop extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_workshops', 'workshop_id', 'user_id')
+            ->withPivot('is_congratulations_shown')
             ->withTimestamps();
     }
 
