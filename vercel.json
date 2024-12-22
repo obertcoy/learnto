@@ -14,6 +14,7 @@
         "APP_ENV": "production",
         "APP_DEBUG": "true",
         "APP_URL": "https://learnto.vercel.app",
+        "APP_KEY": "base64:ZUbIb3WE/AXmy7dkkCXkXjXp1P26SKmwGk+d7ANcU50=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
