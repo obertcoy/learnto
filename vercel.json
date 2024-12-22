@@ -15,7 +15,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "https://learnto.vercel.app",
         "APP_KEY": "base64:ZUbIb3WE/AXmy7dkkCXkXjXp1P26SKmwGk+d7ANcU50=",
 
