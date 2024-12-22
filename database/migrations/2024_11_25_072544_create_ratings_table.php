@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('workshop_id')->constrained()->onDelete('cascade');
-            $table->enum('rate', [1, 2, 3, 4, 5]);
+            $table->enum('rating', [1, 2, 3, 4, 5]);
             $table->timestamps();
             $table->unique(['user_id', 'workshop_id']);
         });

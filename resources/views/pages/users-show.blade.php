@@ -5,43 +5,56 @@
         <div class="sticky top-12 h-fit flex flex-col gap-6">
 
             <x-card>
+                <form action="{{ route('users.update', $user) }}" method="post"  enctype="multipart/form-data">
+                    @csrf
+                    @method('PATCH')
+                    <x-card-header class="relative">
 
-                <x-card-header class="relative">
+                        <div class="flex items-center gap-6">
 
-                    <div class="flex items-center gap-6">
+                            @if (auth()->user() == $user)
+                                <div class="relative">
+                                    <input type="file" id="user-profile-picture" name="profile-picture"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                                        accept="image/*" onchange="previewImage(event)">
 
-                        <x-profile-avatar :user="$user" size="h-24 w-24" redirect="{{ false }}" />
+                                    <x-profile-avatar id="avatar-image" :user="$user" size="h-24 w-24" redirect="{{ false }}"
+                                        class="relative z-10" />
 
+                                </div>
+                            @else
+                                <x-profile-avatar :user="$user" size="h-24 w-24" redirect="{{ false }}" />
+                            @endif
 
-                        <div class="flex flex-col justify-center">
-                            <h2 class="text-2xl font-semibold !text-2xl !font-semibold">{{ $user->name }}</h2>
-                            <x-card-description>{{ $user->email }}</x-card-description>
+                            <div class="flex flex-col justify-center">
+                                <h2 class="text-2xl font-semibold !text-2xl !font-semibold">{{ $user->name }}</h2>
+                                <x-card-description>{{ $user->email }}</x-card-description>
 
+                            </div>
                         </div>
-                    </div>
 
-                </x-card-header>
+                    </x-card-header>
 
-                <x-card-content>
+                    <x-card-content>
 
-                    @if (auth()->user() == $user)
-                        <form action="{{ route('users.update', $user) }}" method="post" class="flex flex-col gap-6">
-                            @csrf
-                            @method('PATCH')
-                            <x-custom-textarea id="profile-bio-input" name="biography" label="Bio"
-                                placeholder="Tell us about yourself..." value="{{ $user->biography }}" />
+                        @if (auth()->user() == $user)
+                            <div class="flex flex-col gap-6">
 
-                            <x-button variant="default">
-                                Update Profile
-                            </x-button>
+                                <x-custom-text-area id="profile-bio-input" name="biography" label="Bio"
+                                    placeholder="Tell us about yourself..." value="{{ $user->biography }}" />
+                                <x-button variant="default">
+                                    Update Profile
+                                </x-button>
+                            </div>
+                        @else
+                            <span>{{ $user->biography }}</span>
+                        @endif
 
-                        </form>
-                    @else
-                        <span>{{ $user->biography }}</span>
-                    @endif
 
-                </x-card-content>
+                    </x-card-content>
 
+
+                </form>
 
             </x-card>
 
@@ -154,3 +167,19 @@
 
 
 </x-app-layout>
+
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var preview = document.getElementById('avatar-image');
+            preview.src = e.target.result;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>

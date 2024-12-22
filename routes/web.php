@@ -26,8 +26,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(WorkshopController::class)->group(function () {
         Route::get('/workshops/create', 'create')->name('workshops.create');
         Route::post('/workshops/store', 'store')->name('workshops.store');
+        Route::get('/workshops/{workshop}/reviews', 'reviews')->name('workshops.show.reviews');
         Route::patch('/workshops/{workshop}', 'update')->name('workshops.update');
         Route::get('/workshops/{workshop}/payment', 'payment')->name('workshops.payment');
+        Route::delete('/workshops/{workshop}', 'destroy')->name('workshops.destroy');
     });
 });
 

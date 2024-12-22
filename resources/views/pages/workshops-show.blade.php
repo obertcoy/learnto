@@ -83,32 +83,47 @@
 
                             @auth
 
-                                @if ($workshop->status == 'Upcoming')
-                                    @if (auth()->user()->id === $workshop->instructor_id)
-                                        <form action="{{ route('workshops.update', $workshop) }}" method="POST"
-                                            class="flex flex-col w-full gap-2">
-                                            @csrf
-                                            @method('PATCH')
+                                @if (auth()->user()->is_admin)
+                                    <form action="{{ route('workshops.destroy', $workshop) }}" method="POST"
+                                        class="flex flex-col w-full gap-2">
+                                        @csrf
+                                        @method('DELETE')
 
-                                            <input type="hidden" name="complete_workshop"
-                                                value="{{ $workshop->date >= now() ? true : false }}">
-                                            <x-button variant="{{ $workshop->date->isPast() ? 'default' : 'muted' }}">
-                                                Complete Workshop
-                                            </x-button>
+                                        <input type="hidden" name="complete_workshop"
+                                            value="{{ $workshop->date >= now() ? true : false }}">
+                                        <x-button variant="destructive">
+                                            Delete Workshop
+                                        </x-button>
 
-                                            <span class="text-sm text-yellow-600 mx-auto">Workshop can only be completed
-                                                after the
-                                                planned date.</span>
-                                        </form>
-                                    @else
-                                        <x-register-workshop-button :workshop="$workshop" class="w-full" />
-                                    @endif
+                                    </form>
                                 @else
-                                    <x-button variant="muted" class="w-full">
-                                        Completed
-                                    </x-button>
-                                @endif
+                                    @if ($workshop->status == 'Upcoming')
+                                        @if (auth()->user()->id === $workshop->instructor_id)
+                                            <form action="{{ route('workshops.update', $workshop) }}" method="POST"
+                                                class="flex flex-col w-full gap-2">
+                                                @csrf
+                                                @method('PATCH')
 
+                                                <input type="hidden" name="complete_workshop"
+                                                    value="{{ $workshop->date >= now() ? true : false }}">
+                                                <x-button variant="{{ $workshop->date->isPast() ? 'default' : 'muted' }}">
+                                                    Complete Workshop
+                                                </x-button>
+
+                                                <span class="text-sm text-yellow-600 mx-auto">Workshop can only be completed
+                                                    after the
+                                                    planned date.</span>
+                                            </form>
+                                        @else
+                                            <x-register-workshop-button :workshop="$workshop" class="w-full" />
+                                        @endif
+                                    @else
+                                        <x-button variant="muted" class="w-full">
+                                            Completed
+                                        </x-button>
+                                    @endif
+
+                                @endif
                             @endauth
 
                             @guest
@@ -151,13 +166,14 @@
                         <x-profile-avatar :user="$workshop->instructor" size="h-16 w-16" />
                         <div>
                             <h3 class="text-xl font-semibold">{{ $workshop->instructor->name }}</h3>
-                            <div class="flex items-center">
-                                @if ($workshop->instructor->ratings_count > 0)
+                            <div class="flex items-center gap-0.5">
+
+                                @if ($averageRating > 0)
                                     <x-custom-icon icon="star" />
 
                                     <span
-                                        class="text-sm text-gray-600 ml-1">{{ number_format($workshop->instructor->average_rating, 1) ?? 'N/A' }}
-                                        from {{ $workshop->instructor->ratings_count }}</span>
+                                        class="text-sm text-gray-600 ml-1"><b>{{ number_format($averageRating, 1) ?? 'N/A' }}</b>
+                                        from <b>{{ $totalStudents }} students</b></span>
                                 @endif
                             </div>
                         </div>
@@ -169,24 +185,118 @@
             @endif
 
         @endauth
-        
-        
+
+
     </section>
-    <x-modal-overlay>
 
-            <x-card>
-                <x-card-title>
-                    <h2>Congratulations!!</h2>
-                </x-card-title>
+    @section('modal')
+        @auth
+            @if ($showCongratulationsModal)
+                <x-modal-overlay id="congratulations-modal">
 
-                <x-card-content>
 
-                    Test
+                    <x-card class="min-w-[240px] w-1/3 py-3 relative">
 
-                </x-card-content>
+                        <button onclick="hideModal()" class="absolute top-6 right-6">
+                            <x-custom-icon icon='close' />
+                        </button>
 
-            </x-card>
+                        <x-card-header class="flex flex-col items-center">
 
-    </x-modal-overlay>
+                            <x-card-title>
+                                <h2>Congratulations!!!</h2>
+                            </x-card-title>
 
+                            <x-card-description class='font-light'>You have finished the workshop</x-card-description>
+
+                        </x-card-header>
+
+
+                        <x-card-content>
+
+                            <form action="{{ route('workshops.update', $workshop) }}" method="post"
+                                class="flex flex-col gap-6">
+                                @csrf
+                                @method('PATCH')
+
+                                <div class="flex flex-col items-center gap-3">
+                                    <div x-data="{ rating: 0 }" class="flex flex-col items-center">
+                                        <div class="flex flex-row gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer"
+                                                :class="{ 'text-yellow-400': rating >= 1, 'text-gray-400': rating < 1 }"
+                                                @click="rating = 1" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
+                                            </svg>
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer"
+                                                :class="{ 'text-yellow-400': rating >= 2, 'text-gray-400': rating < 2 }"
+                                                @click="rating = 2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
+                                            </svg>
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer"
+                                                :class="{ 'text-yellow-400': rating >= 3, 'text-gray-400': rating < 3 }"
+                                                @click="rating = 3" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
+                                            </svg>
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer"
+                                                :class="{ 'text-yellow-400': rating >= 4, 'text-gray-400': rating < 4 }"
+                                                @click="rating = 4" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
+                                            </svg>
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer"
+                                                :class="{ 'text-yellow-400': rating >= 5, 'text-gray-400': rating < 5 }"
+                                                @click="rating = 5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 .587l3.668 7.564 8.332 1.151-6.064 5.874 1.515 8.277L12 18.813l-7.451 4.64 1.515-8.277-6.064-5.874 8.332-1.151z" />
+                                            </svg>
+                                        </div>
+
+
+                                        <input type="hidden" id="workshop-rating" name="rating" :value="rating">
+                                    </div>
+
+
+                                    <x-card-description>Rate the workshop</x-card-description>
+                                </div>
+
+
+                                <hr>
+
+                                <div class="flex flex-col">
+
+                                    <x-custom-text-area id="workshop-review" name="review" label="Review:"
+                                        placeholder="It's great, courses are very straightforward" value="" />
+
+                                </div>
+
+
+                                <x-button variant="default">
+                                    Submit
+                                </x-button>
+
+                            </form>
+                        </x-card-content>
+
+                    </x-card>
+
+                </x-modal-overlay>
+            @endif
+        @endauth
+    @endsection
 </x-app-layout>
+
+<script>
+    function hideModal() {
+        const modal = document.getElementById('congratulations-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>

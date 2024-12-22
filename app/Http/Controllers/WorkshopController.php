@@ -42,7 +42,7 @@ class WorkshopController extends Controller
             'instructor' => function ($query) {
                 $query->select('id', 'name', 'profile_picture_url')
                     ->withCount('ratings')
-                    ->withAvg('ratings as average_rating', 'rate');
+                    ->withAvg('ratings as average_rating', 'rating');
             },
             'topics' => function ($query) {
                 $query->select('topics.id', 'topics.topic');
@@ -74,7 +74,7 @@ class WorkshopController extends Controller
             'instructor' => function ($query) {
                 $query->select('id', 'name', 'profile_picture_url')
                     ->withCount('ratings')
-                    ->withAvg('ratings as average_rating', 'rate');
+                    ->withAvg('ratings as average_rating', 'rating');
             },
             'topics:topic'
         ])->first()->take(3)->get();
@@ -151,18 +151,41 @@ class WorkshopController extends Controller
             return view('pages.workshops-show', compact('workshop'));
         }
 
+        $totalSumOfRatings = Workshop::with('ratings')
+            ->where('instructor_id', $workshop->instructor_id)
+            ->get()
+            ->sum(function ($workshop) {
+                return $workshop->ratings->sum('rating');
+            });
+
+        $totalStudents = Workshop::with('users')
+            ->where('instructor_id', $workshop->instructor_id)
+            ->get()
+            ->sum(function ($workshop) {
+                return $workshop->users->count();
+            });
+
+        $averageRating = $totalStudents > 0 ? $totalSumOfRatings / $totalStudents : 0;
+
         $attendees = $workshop->users()->paginate(9);
         $showCongratulationsModal = false;
 
-        if(Auth::user()->id != $workshop->instructor_id && $workshop->status == 'Completed'){
-            
+        if (Auth::user()->id != $workshop->instructor_id && $workshop->status == 'Completed') {
+
             $userPivot = $workshop->users()->where('user_id', '=', Auth::user()->id)->first();
 
-            $showCongratulationsModal = !$userPivot->pivot->is_congratulations_shown;
+            if ($userPivot) {
 
+                $showCongratulationsModal = !$userPivot->pivot->is_congratulations_shown;
+            }
         }
 
-        return view('pages.workshops-show', compact('workshop', 'attendees', 'showCongratulationsModal'));
+        return view('pages.workshops-show', compact('workshop', 'averageRating', 'totalStudents', 'attendees', 'showCongratulationsModal'));
+    }
+
+    public function reviews(Workshop $workshop)
+    {
+        return view('pages.workshops-show-reviews', compact('workshop'));
     }
 
     public function payment(Workshop $workshop)
@@ -195,9 +218,12 @@ class WorkshopController extends Controller
             return back()->with('failed', 'Unauthorized action.');
         }
 
-        if ($request->input('complete_workshop')) {
+        if ($request->has('complete_workshop')) {
+
             if (!$request->input('complete_workshop')) {
-                return back()->with('failed', 'Workshop can be completed after the planned date.');
+                return redirect()
+                    ->back()
+                    ->with('failed', 'Workshop can only be completed after the planned date.');
             }
 
             $workshop->update([
@@ -210,9 +236,57 @@ class WorkshopController extends Controller
         }
 
 
+        if ($request->has('rating') || $request->has('review')) {
+
+            $rating = $request->input('rating');
+            $review = $request->input('review');
+
+            $addFeedback = false;
+
+            $user = Auth::user();
+
+            if ($rating > 0) {
+                $pivotData['rating'] = $rating;
+
+                $workshop->ratings()->create([
+                    'user_id' => $user->id,
+                    'rating' => $rating,
+                ]);
+
+                $addFeedback = true;
+            }
+
+            if ($review) {
+                $pivotData['review'] = $review;
+
+                $workshop->reviews()->create([
+                    'user_id' => $user->id,
+                    'content' => $review,
+                ]);
+
+                $addFeedback = true;
+            }
+
+
+            $userPivot = $workshop->users()->where('user_id', '=', $user->id)->first();
+
+            if ($userPivot) {
+
+                $userPivot->pivot->is_congratulations_shown = true;
+                $userPivot->pivot->save();
+            }
+
+            if ($addFeedback) {
+                return redirect()->back()->with('success', 'Thank you for your feedback.');
+            }
+
+            return redirect()->back()->with('success', 'Feedbacks are valuable to the instructor.');
+        }
+
+
         return redirect()
             ->back()
-            ->with('success', 'Workshop updated successfully!');
+            ->with('failed', 'Failed to update workshop.');
     }
 
     /**
@@ -220,6 +294,16 @@ class WorkshopController extends Controller
      */
     public function destroy(Workshop $workshop)
     {
-        //
+        if(!Auth::user()->is_admin){
+            return redirect()
+            ->back()
+            ->with('failed', "Unauthorized action.");
+        }
+
+        $workshop->delete();
+
+        return redirect()
+            ->route('workshops.explore')
+            ->with('success', "Workshop: {$workshop->name} has been deleted successfully.");
     }
 }

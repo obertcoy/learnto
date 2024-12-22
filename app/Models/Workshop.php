@@ -60,7 +60,7 @@ class Workshop extends Model
 
     public function averageRating()
     {
-        return $this->ratings()->avg('rate');
+        return $this->ratings()->avg('rating');
     }
 
     public function ratingsCount()

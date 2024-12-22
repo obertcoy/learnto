@@ -28,7 +28,7 @@
                 <x-custom-icon icon="users" />
 
 
-                <span>{{ $workshop->usersCount()}} attendees</span>
+                <span>{{ $workshop->usersCount() }} attendees</span>
             </x-custom-label>
             @if ($workshop->status == 'Completed')
                 <x-custom-label>
@@ -46,15 +46,17 @@
             @endif
         </div>
         <div class="mt-4 flex space-x-2">
-            <x-button>
-                <a href="{{ route('workshops.show', ['workshop' => $workshop->id]) }}">View Details</a>
-            </x-button>
+            <a href="{{ route('workshops.show', ['workshop' => $workshop->id]) }}">
+                <x-button>
+                    View Details
+                </x-button>
+            </a>
             @if (auth()->user() == $workshop->instructor)
-                @if ($workshop->status == 'Upcoming')
-                    <x-button variant="outline">Edit Workshop</x-button>
-                @endif
+
                 @if ($workshop->status == 'Completed')
-                    <x-button variant="outline">Check Reviews</x-button>
+                    <a href="{{ route('workshops.show.reviews', ['workshop' => $workshop->id]) }}">
+                        <x-button variant="outline">Check Reviews</x-button>
+                    </a>
                 @endif
             @endif
         </div>

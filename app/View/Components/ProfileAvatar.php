@@ -17,8 +17,9 @@ class ProfileAvatar extends Component
     public $size;
     public $fallback;
     public $redirect;
+    public $id;
 
-    public function __construct($user, $size = 'h-10 w-10', $redirect=true)
+    public function __construct($user, $size = 'h-10 w-10', $redirect=true, $id = '')
     {
         $this->user = $user;
         $this->src = $user->profile_picture_url;
@@ -26,6 +27,7 @@ class ProfileAvatar extends Component
         $this->size = $size;
         $this->redirect = $redirect;
         $this->fallback = collect(explode(' ', $user->name))->map(fn($n) => strtoupper($n[0]))->join('');
+        $this->id = $id;
     }
 
     public function render()

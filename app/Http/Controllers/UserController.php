@@ -7,6 +7,7 @@ use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class UserController extends Controller
 {
@@ -51,12 +52,14 @@ class UserController extends Controller
         };
 
         $totalSumOfRatings = Workshop::with('ratings')
+            ->where('instructor_id', $user->id)
             ->get()
             ->sum(function ($workshop) {
-                return $workshop->ratings->sum('rate');
+                return $workshop->ratings->sum('rating');
             });
 
         $totalStudents = Workshop::with('users')
+            ->where('instructor_id', $user->id)
             ->get()
             ->sum(function ($workshop) {
                 return $workshop->users->count();
@@ -119,6 +122,28 @@ class UserController extends Controller
                 ->with('success', 'Congratulations! You are now an instructor.');
         }
 
+        if ($request->hasFile('profile-picture') && $request->file('profile-picture')->isValid()) {
+
+            $file = $request->file('profile-picture');
+
+            $fileName = $file->getClientOriginalName();
+            $path = 'learnto/users/' . $user->id . '/'. $fileName;
+
+            $storage = Firebase::storage();
+            $bucket = $storage->getBucket();
+            $bucket->upload(
+                fopen($file->getRealPath(), 'r'),
+                [
+                    'name' => $path,
+                ]
+            );
+            $fileUrl = $storage->getBucket()->object($path)->signedUrl(new \DateTime('tomorrow'));
+
+            $user->profile_picture_url = $fileUrl;
+            $user->save();
+
+        }
+
         if ($request->input('biography')) {
 
             $user->biography = $request->input('biography');
@@ -127,7 +152,7 @@ class UserController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Bio updated successfully!');
+            ->with('success', 'User information updated successfully!');
     }
 
     /**
@@ -142,11 +167,11 @@ class UserController extends Controller
     {
 
         if ($workshop->users->contains(Auth::user()->id)) {
-            return back()->with('failed', 'You are already registered for this workshop!');
+            return redirect()->back()->with('failed', 'You are already registered for this workshop!');
         }
 
         if ($workshop->status == 'Completed') {
-            return back()->with('failed', 'This workshop is already completed!');
+            return redirect()->back()->with('failed', 'This workshop is already completed!');
         }
 
         $workshop->users()->attach(Auth::user()->id);

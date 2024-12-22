@@ -36,6 +36,9 @@
         {{ $slot }}
     </main>
 
+
+    @yield('modal')
+
     @if (session('success'))
         <x-toast type="success" text="{{ session('success') }}" />
     @elseif(session('failed'))
