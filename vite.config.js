@@ -11,6 +11,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    base: '/build/',
     build: {
         outDir: 'public/build',
         assetsDir: 'assets',
