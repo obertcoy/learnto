@@ -1,4 +1,4 @@
-@props(['workshop','hasJoined'])
+@props(['workshop'])
 
 <x-card class="w-full xl:w-[400px] flex flex-col">
 
@@ -66,7 +66,7 @@
             </x-button>
         </a>
         @if ($workshop->status === 'Upcoming')
-            @if ($hasJoined)
+            @if ($workshop->users->contains(Auth::user()))
                 <div class="flex items-center gap-2">
                     <a href="{{ $workshop->vc_link }}" class=" text-blue-600 hover:underline">
                         Join video call
