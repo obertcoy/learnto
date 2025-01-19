@@ -13,12 +13,6 @@
             "dest": "/api/index.php"
         }
     ],
-    "rewrites": [
-    {
-      "source": "/build/(.*)",
-      "destination": "/public/build/$1"
-    }
-  ],
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",

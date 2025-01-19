@@ -20,10 +20,10 @@
                         <x-custom-input name="create-name-input" label="Workshop Name"
                             placeholder="Enter the name of your workshop" />
 
-                        <x-custom-textarea name="create-description-input" label="Description"
+                        <x-custom-text-area name="create-description-input" label="Description"
                             placeholder="Describe your workshop" />
 
-                        <x-custom-textarea name="create-objectives-input"
+                        <x-custom-text-area name="create-objectives-input"
                             label="Objectives (Enter each objective as a bullet point)"
                             placeholder="- Learn React
                     - Learn Custom Hook" />
