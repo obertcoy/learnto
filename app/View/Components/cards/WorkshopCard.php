@@ -9,7 +9,7 @@ use Illuminate\View\Component;
 
 class WorkshopCard extends Component
 {
-public $workshop;
+    public $workshop;
     public $hasJoined;
 
     /**
@@ -17,10 +17,12 @@ public $workshop;
      */
     public function __construct($workshop)
     {
-        $this->workshop = $workshop;
-        // $this->hasJoined = Auth::check() && $workshop->users()->contains(Auth::id());
-        $this->hasJoined = $workshop->users->contains(Auth::user());
+        $this->workshop = $workshop->load('users'); // Eager load users relationship
+        $user = Auth::user(); // Retrieve the currently authenticated user
+
+        $this->hasJoined = $user ? $workshop->users->contains($user) : false;
     }
+
 
     /**
      * Get the view / contents that represent the component.

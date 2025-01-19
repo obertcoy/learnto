@@ -1,3 +1,5 @@
+@props(['workshop','hasJoined'])
+
 <x-card class="w-full xl:w-[400px] flex flex-col">
 
     {{-- {{ dd($workshop->topics) }} --}}

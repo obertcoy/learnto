@@ -17,8 +17,7 @@
         "vite": "^6.0"
     },
     "dependencies": {
-        "tailwindcss-animate": "^1.0.7"
-    },
-    "engines": { "node": "18.x" }
-
+        "tailwindcss-animate": "^1.0.7",
+        "vercel-php": "^0.7.3"
+    }
 }
